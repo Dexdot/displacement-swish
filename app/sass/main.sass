@@ -1,0 +1,57 @@
+@import "hamburgers"
+@import "libs"
+@import "mixins"
+@import "vars"
+@import "rfs"
+
+html, body 
+	height: 100%
+body 
+	position: relative
+	opacity: 1
+	color: #66ffbc
+	+rfs(20)
+	line-height: 1.6
+h2
+	+bold
+	+rfs(60)
+p
+	+reg
+.hamburger 
+	display: block
+	position: fixed
+	top: 20px	
+	right: 15px
+	padding: 0
+	z-index: 10
+	outline: none
+	width: 35px
+	height: 35px
+	&-box 
+		transform: translateY(2px)
+.section
+	margin: 0 auto
+	max-width: 900px
+	position: relative
+	+clr
+	&:nth-child(odd)
+		.section__image
+			float: right
+		.section__content
+			float: left
+	&__image
+		float: left
+		width: 50%
+		+rimg
+	&__content
+		position: absolute
+		right: 0
+		top: 50%
+		transform: translate(-50%, -50%)
+		float: right
+		width: 50%
+
+
+
+
+@import "media"
