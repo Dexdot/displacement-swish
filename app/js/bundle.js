@@ -20740,118 +20740,103 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 __webpack_require__(91);
 
 var _gsap = __webpack_require__(194);
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var ImageLoader = function () {
-  function ImageLoader(swishImg) {
-    _classCallCheck(this, ImageLoader);
+var ImageLoader = function ImageLoader(swishImg) {
+  var _this = this;
 
-    this.src = swishImg.src;
-    this.computedStyle = getComputedStyle(swishImg);
-    this.width = +this.computedStyle.width.split('px')[0];
-    this.height = +this.computedStyle.height.split('px')[0];
+  _classCallCheck(this, ImageLoader);
 
-    swishImg.insertAdjacentHTML('afterend', document.createElement('div').outerHTML);
-    this.wrapper = swishImg.nextSibling;
-    this.wrapper.classList.add('swish-container');
+  this.load = function (afterLoad) {
+    var tmpImg = new Image();
+    tmpImg.src = _this.src;
+    tmpImg.addEventListener('load', afterLoad);
+  };
 
-    swishImg.parentNode.removeChild(swishImg);
+  this.startAnimation = function () {
+    _this.bg = PIXI.Sprite.fromImage(_this.src);
+    _this.bg.width = _this.width;
+    _this.bg.height = _this.height;
+    _this.bg.position.x = 0;
+    _this.bg.position.y = 0;
+    _this.container.addChild(_this.bg);
 
-    this.isAnimated = false;
-    this.isHovered = false;
+    _this.displacementSprite = PIXI.Sprite.fromImage('img/displacement.jpg');
+    _this.displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
+    _this.displacementFilter = new PIXI.filters.DisplacementFilter(_this.displacementSprite);
+    _this.displacementFilter.scale.set(50 + Math.random() * 50);
+    _this.displacementSprite.scale.set(0.4 + 0.6 * Math.random());
 
-    this.app = new PIXI.Application(this.width, this.height, {
-      transparent: true
+    _this.app.stage.addChild(_this.displacementSprite);
+
+    _this.container.filters = [_this.displacementFilter];
+
+    _this.click();
+    _this.hover();
+  };
+
+  this.click = function () {
+    _this.wrapper.addEventListener('click', function () {
+      _gsap.TweenMax.to(_this.displacementFilter.scale, 1, {
+        x: 0,
+        y: 0,
+        onComplete: function onComplete() {
+          _this.isAnimated = true;
+        }
+      });
     });
+  };
 
-    this.wrapper.append(this.app.view);
+  this.hover = function () {
+    _this.wrapper.addEventListener('mouseover', function () {
+      if (!_this.isHovered && _this.isAnimated) {
+        _this.isHovered = true;
+        _gsap.TweenMax.ticker.addEventListener('tick', _this.doWaves, _this);
+        _gsap.TweenMax.to(_this.displacementFilter.scale, 0.5, { x: 15, y: 15 });
+      }
+    });
+    _this.wrapper.addEventListener('mouseout', function () {
+      if (_this.isHovered && _this.isAnimated) {
+        _this.isHovered = false;
+        _gsap.TweenMax.ticker.removeEventListener('tick', _this.doWaves, _this);
+        _gsap.TweenMax.to(_this.displacementFilter.scale, 0.5, { x: 0, y: 0 });
+      }
+    });
+  };
 
-    this.container = new PIXI.Container();
-    this.app.stage.addChild(this.container);
+  this.doWaves = function () {
+    _this.displacementSprite.x += 1;
+  };
 
-    this.load(this.startAnimation.bind(this));
-  }
+  this.src = swishImg.src;
+  this.computedStyle = getComputedStyle(swishImg);
+  this.width = +this.computedStyle.width.split('px')[0];
+  this.height = +this.computedStyle.height.split('px')[0];
 
-  _createClass(ImageLoader, [{
-    key: 'load',
-    value: function load(afterLoad) {
-      var tmpImg = new Image();
-      tmpImg.src = this.src;
-      tmpImg.addEventListener('load', afterLoad);
-    }
-  }, {
-    key: 'startAnimation',
-    value: function startAnimation() {
-      this.bg = PIXI.Sprite.fromImage(this.src);
-      this.bg.width = this.width;
-      this.bg.height = this.height;
-      this.bg.position.x = 0;
-      this.bg.position.y = 0;
-      this.container.addChild(this.bg);
+  swishImg.insertAdjacentHTML('afterend', document.createElement('div').outerHTML);
+  this.wrapper = swishImg.nextSibling;
+  this.wrapper.classList.add('swish-container');
 
-      this.displacementSprite = PIXI.Sprite.fromImage('img/displacement.jpg');
-      this.displacementSprite.texture.baseTexture.wrapMode = PIXI.WRAP_MODES.REPEAT;
-      this.displacementFilter = new PIXI.filters.DisplacementFilter(this.displacementSprite);
-      this.displacementFilter.scale.set(50 + Math.random() * 50);
-      this.displacementSprite.scale.set(0.4 + 0.6 * Math.random());
+  swishImg.parentNode.removeChild(swishImg);
 
-      this.app.stage.addChild(this.displacementSprite);
+  this.isAnimated = false;
+  this.isHovered = false;
 
-      this.container.filters = [this.displacementFilter];
+  this.app = new PIXI.Application(this.width, this.height, {
+    transparent: true
+  });
 
-      this.click();
-      this.hover();
-    }
-  }, {
-    key: 'click',
-    value: function click() {
-      var _this = this;
+  this.wrapper.append(this.app.view);
 
-      this.wrapper.addEventListener('click', function () {
-        _gsap.TweenMax.to(_this.displacementFilter.scale, 1, {
-          x: 0,
-          y: 0,
-          onComplete: function onComplete() {
-            _this.isAnimated = true;
-          }
-        });
-      });
-    }
-  }, {
-    key: 'hover',
-    value: function hover() {
-      var _this2 = this;
+  this.container = new PIXI.Container();
+  this.app.stage.addChild(this.container);
 
-      this.wrapper.addEventListener('mouseover', function () {
-        if (!_this2.isHovered && _this2.isAnimated) {
-          _this2.isHovered = true;
-          _gsap.TweenMax.ticker.addEventListener('tick', _this2.doWaves, _this2);
-          _gsap.TweenMax.to(_this2.displacementFilter.scale, 0.5, { x: 15, y: 15 });
-        }
-      });
-      this.wrapper.addEventListener('mouseout', function () {
-        if (_this2.isHovered && _this2.isAnimated) {
-          _this2.isHovered = false;
-          _gsap.TweenMax.ticker.removeEventListener('tick', _this2.doWaves, _this2);
-          _gsap.TweenMax.to(_this2.displacementFilter.scale, 0.5, { x: 0, y: 0 });
-        }
-      });
-    }
-  }, {
-    key: 'doWaves',
-    value: function doWaves() {
-      this.displacementSprite.x += 1;
-    }
-  }]);
-
-  return ImageLoader;
-}();
+  this.load(this.startAnimation);
+};
 
 exports.default = ImageLoader;
 

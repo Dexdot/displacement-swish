@@ -29,14 +29,14 @@ export default class ImageLoader {
     this.container = new PIXI.Container();
     this.app.stage.addChild(this.container);
 
-    this.load(this.startAnimation.bind(this));
+    this.load(this.startAnimation);
   }
-  load(afterLoad) {
+  load = afterLoad => {
     const tmpImg = new Image();
     tmpImg.src = this.src;
     tmpImg.addEventListener('load', afterLoad);
-  }
-  startAnimation() {
+  };
+  startAnimation = () => {
     this.bg = PIXI.Sprite.fromImage(this.src);
     this.bg.width = this.width;
     this.bg.height = this.height;
@@ -59,8 +59,8 @@ export default class ImageLoader {
 
     this.click();
     this.hover();
-  }
-  click() {
+  };
+  click = () => {
     this.wrapper.addEventListener('click', () => {
       TweenMax.to(this.displacementFilter.scale, 1, {
         x: 0,
@@ -70,8 +70,8 @@ export default class ImageLoader {
         }
       });
     });
-  }
-  hover() {
+  };
+  hover = () => {
     this.wrapper.addEventListener('mouseover', () => {
       if (!this.isHovered && this.isAnimated) {
         this.isHovered = true;
@@ -86,8 +86,8 @@ export default class ImageLoader {
         TweenMax.to(this.displacementFilter.scale, 0.5, { x: 0, y: 0 });
       }
     });
-  }
-  doWaves() {
+  };
+  doWaves = () => {
     this.displacementSprite.x += 1;
-  }
+  };
 }
